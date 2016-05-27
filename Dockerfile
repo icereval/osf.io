@@ -78,6 +78,25 @@ COPY ./requirements.txt /code/
 COPY ./requirements/ /code/requirements/
 RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/requirements/metrics.txt
 
+COPY ./website/addons/badges/requirements.txt /code/website/addons/badges/
+RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/badges/requirements.txt
+COPY ./website/addons/box/requirements.txt /code/website/addons/box/
+RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/box/requirements.txt
+COPY ./website/addons/dataverse/requirements.txt /code/website/addons/dataverse/
+RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/dataverse/requirements.txt
+COPY ./website/addons/dropbox/requirements.txt /code/website/addons/dropbox/
+RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/dropbox/requirements.txt
+COPY ./website/addons/github/requirements.txt /code/website/addons/github/
+RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/github/requirements.txt
+COPY ./website/addons/mendeley/requirements.txt /code/website/addons/mendeley/
+RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/mendeley/requirements.txt
+COPY ./website/addons/s3/requirements.txt /code/website/addons/s3/
+RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/s3/requirements.txt
+COPY ./website/addons/twofactor/requirements.txt /code/website/addons/twofactor/
+RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/twofactor/requirements.txt
+COPY ./website/addons/zotero/requirements.txt /code/website/addons/zotero/
+RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/zotero/requirements.txt
+
 COPY ./package.json /code/
 RUN npm install --production
 
