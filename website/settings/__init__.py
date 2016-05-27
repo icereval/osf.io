@@ -6,7 +6,12 @@
     >>> settings.MAIL_SERVER
     'smtp.sendgrid.net'
 '''
+import os
 from .defaults import *  # noqa
+
+
+globals().update(os.environ)
+
 
 try:
     from .local import *  # noqa
