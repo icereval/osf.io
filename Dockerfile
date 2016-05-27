@@ -111,4 +111,9 @@ RUN invoke build_js_config_files
 
 RUN node ./node_modules/webpack/bin/webpack.js --config webpack.prod.config.js
 
+RUN pip uninstall uritemplate.py --yes || true
+RUN pip install uritemplate.py==0.3.0
+
+RUN rm -rf ./.git ./node_modules
+
 CMD ["gosu", "nobody", "invoke", "--list"]
