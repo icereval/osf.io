@@ -33,10 +33,10 @@ RUN apt-get update \
         curl \
     && gpg --keyserver pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
     && curl -o /usr/local/bin/gosu -SL "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
-  	&& curl -o /usr/local/bin/gosu.asc -SL "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
-  	&& gpg --verify /usr/local/bin/gosu.asc \
-  	&& rm /usr/local/bin/gosu.asc \
-  	&& chmod +x /usr/local/bin/gosu \
+    && curl -o /usr/local/bin/gosu.asc -SL "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
+    && gpg --verify /usr/local/bin/gosu.asc \
+    && rm /usr/local/bin/gosu.asc \
+    && chmod +x /usr/local/bin/gosu \
     && apt-get clean \
     && apt-get autoremove -y \
         curl \
@@ -50,13 +50,13 @@ RUN apt-get update \
         curl \
     && gpg --keyserver pool.sks-keyservers.net --recv-keys 7937DFD2AB06298B2293C3187D33FF9D0246406D 114F43EE0176B71C7BC219DD50A3051F888C628D \
     && curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz" \
-  	&& curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
-  	&& gpg --verify SHASUMS256.txt.asc \
-  	&& grep " node-v$NODE_VERSION-linux-x64.tar.gz\$" SHASUMS256.txt.asc | sha256sum -c - \
-  	&& tar -xzf "node-v$NODE_VERSION-linux-x64.tar.gz" -C /usr/local --strip-components=1 \
-  	&& rm "node-v$NODE_VERSION-linux-x64.tar.gz" SHASUMS256.txt.asc \
-  	&& npm install -g npm@"$NPM_VERSION" \
-  	&& npm cache clear \
+    && curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
+    && gpg --verify SHASUMS256.txt.asc \
+    && grep " node-v$NODE_VERSION-linux-x64.tar.gz\$" SHASUMS256.txt.asc | sha256sum -c - \
+    && tar -xzf "node-v$NODE_VERSION-linux-x64.tar.gz" -C /usr/local --strip-components=1 \
+    && rm "node-v$NODE_VERSION-linux-x64.tar.gz" SHASUMS256.txt.asc \
+    && npm install -g npm@"$NPM_VERSION" \
+    && npm cache clear \
     && apt-get clean \
     && apt-get autoremove -y \
         curl \
@@ -76,26 +76,27 @@ RUN pip install -U pip
 
 COPY ./requirements.txt /code/
 COPY ./requirements/ /code/requirements/
-RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/requirements/metrics.txt
+# RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/requirements/metrics.txt
 
-COPY ./website/addons/badges/requirements.txt /code/website/addons/badges/
-RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/badges/requirements.txt
+# COPY ./website/addons/badges/requirements.txt /code/website/addons/badges/
+# RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/badges/requirements.txt
 COPY ./website/addons/box/requirements.txt /code/website/addons/box/
-RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/box/requirements.txt
 COPY ./website/addons/dataverse/requirements.txt /code/website/addons/dataverse/
-RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/dataverse/requirements.txt
 COPY ./website/addons/dropbox/requirements.txt /code/website/addons/dropbox/
-RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/dropbox/requirements.txt
-COPY ./website/addons/github/requirements.txt /code/website/addons/github/
-RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/github/requirements.txt
-COPY ./website/addons/mendeley/requirements.txt /code/website/addons/mendeley/
-RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/mendeley/requirements.txt
-COPY ./website/addons/s3/requirements.txt /code/website/addons/s3/
-RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/s3/requirements.txt
-COPY ./website/addons/twofactor/requirements.txt /code/website/addons/twofactor/
-RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/twofactor/requirements.txt
 COPY ./website/addons/zotero/requirements.txt /code/website/addons/zotero/
-RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/zotero/requirements.txt
+COPY ./website/addons/github/requirements.txt /code/website/addons/github/
+COPY ./website/addons/mendeley/requirements.txt /code/website/addons/mendeley/
+COPY ./website/addons/s3/requirements.txt /code/website/addons/s3/
+COPY ./website/addons/twofactor/requirements.txt /code/website/addons/twofactor/
+
+RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/dropbox/requirements.txt && \
+  pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/github/requirements.txt && \
+  pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/mendeley/requirements.txt && \
+  pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/s3/requirements.txt && \
+  pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/twofactor/requirements.txt && \
+  pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/box/requirements.txt && \
+  pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/dataverse/requirements.txt && \
+  pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/zotero/requirements.txt
 
 COPY ./package.json /code/
 RUN npm install --production
@@ -105,15 +106,17 @@ COPY ./bower.json /code/
 RUN ./node_modules/bower/bin/bower install --allow-root
 
 COPY ./ /code/
+RUN mv /code/website/settings/local{-dist,}.py && \
+  mv /code/api/base/settings/local{-dist,}.py
 
-RUN invoke requirements --addons
+RUN invoke requirements --addons && \
+  (pip uninstall uritemplate.py --yes || true) && \
+  pip install uritemplate.py==0.3.0
+
 RUN invoke build_js_config_files
 
 RUN node ./node_modules/webpack/bin/webpack.js --config webpack.prod.config.js
 
-RUN pip uninstall uritemplate.py --yes || true
-RUN pip install uritemplate.py==0.3.0
-
-RUN rm -rf ./.git ./node_modules
+RUN rm -rf ./node_modules ./website/static/vendor/bower_components
 
 CMD ["gosu", "nobody", "invoke", "--list"]
