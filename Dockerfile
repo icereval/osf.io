@@ -106,8 +106,8 @@ COPY ./bower.json /code/
 RUN ./node_modules/bower/bin/bower install --allow-root
 
 COPY ./ /code/
-RUN mv /code/website/settings/local{-dist,}.py && \
-  mv /code/api/base/settings/local{-dist,}.py
+RUN mv /code/website/settings/local-dist.py /code/website/settings/local.py && \
+  mv /code/api/base/settings/local-dist.py /code/api/base/settings/local.py
 
 RUN invoke requirements --addons && \
   (pip uninstall uritemplate.py --yes || true) && \
