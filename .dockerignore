@@ -1,6 +1,6 @@
 .git
 node_modules
-local.py
+**/local.py
 *tests
 **/tests
 **/bower_components
