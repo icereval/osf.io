@@ -9,15 +9,13 @@
 import os
 from .defaults import *  # noqa
 
-
-globals().update(os.environ)
-
-
 try:
     from .local import *  # noqa
 except ImportError as error:
     raise ImportError("No local.py settings file found. Did you remember to "
                         "copy local-dist.py to local.py?")
+
+globals().update(os.environ)
 
 if not DEV_MODE:
     from . import local
