@@ -11,12 +11,12 @@ RUN apt-get update \
         libxslt1-dev \
         zlib1g-dev \
         # matplotlib
-        libfreetype6-dev \
-        libxft-dev \
-        # scipy
-        gfortran \
-        libopenblas-dev \
-        liblapack-dev \
+        # libfreetype6-dev \
+        # libxft-dev \
+        # # scipy
+        # gfortran \
+        # libopenblas-dev \
+        # liblapack-dev \
         # cryptography
         build-essential \
         libssl-dev \
@@ -67,19 +67,9 @@ WORKDIR /code
 
 RUN pip install -U pip
 
-# RUN git clone -b master --single-branch https://github.com/CenterForOpenScience/osf.io.git /code
-# RUN cp /code/website/settings/local-dist.py /code/website/settings/local.py
-
-# RUN pip install --no-cache-dir numpy==1.8.0
-# RUN invoke requirements --metrics --addons
-# RUN invoke assets --allow-root
-
 COPY ./requirements.txt /code/
 COPY ./requirements/ /code/requirements/
-# RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/requirements/metrics.txt
 
-# COPY ./website/addons/badges/requirements.txt /code/website/addons/badges/
-# RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/badges/requirements.txt
 COPY ./website/addons/box/requirements.txt /code/website/addons/box/
 COPY ./website/addons/dataverse/requirements.txt /code/website/addons/dataverse/
 COPY ./website/addons/dropbox/requirements.txt /code/website/addons/dropbox/
@@ -89,47 +79,51 @@ COPY ./website/addons/mendeley/requirements.txt /code/website/addons/mendeley/
 COPY ./website/addons/s3/requirements.txt /code/website/addons/s3/
 COPY ./website/addons/twofactor/requirements.txt /code/website/addons/twofactor/
 
-RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/dropbox/requirements.txt && \
+RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/requirements.txt && \
+  pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/dropbox/requirements.txt && \
   pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/github/requirements.txt && \
   pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/mendeley/requirements.txt && \
   pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/s3/requirements.txt && \
   pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/twofactor/requirements.txt && \
   pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/box/requirements.txt && \
   pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/dataverse/requirements.txt && \
-  pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/zotero/requirements.txt
+  pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/zotero/requirements.txt && \
+  (pip uninstall uritemplate.py --yes || true) && \
+  pip install --no-cache-dir uritemplate.py==0.3.0
 
+# Bower setup and clean up
+COPY ./.bowerrc /code/
+COPY ./bower.json /code/
+RUN npm install bower && \
+  ./node_modules/bower/bin/bower install --allow-root && \
+  ./node_modules/bower/bin/bower cache clean --allow-root
+# /Bower
+
+# NPM/webpack
 COPY ./package.json /code/
 RUN npm install --production
 
-COPY ./.bowerrc /code/
-COPY ./bower.json /code/
-RUN ./node_modules/bower/bin/bower install --allow-root
-
-COPY ./ /code/
+COPY ./tasks /code/tasks
+COPY ./website/settings /code/website/settings/
+COPY ./api/base/settings /code/api/base/settings/
+COPY ./website/__init__.py /code/website/__init__.py
+COPY ./addons.json /code/addons.json
 RUN mv /code/website/settings/local-dist.py /code/website/settings/local.py && \
-  mv /code/api/base/settings/local-dist.py /code/api/base/settings/local.py
+    mv /code/api/base/settings/local-dist.py /code/api/base/settings/local.py
 
-RUN pip install invoke && \
-  invoke requirements --release && \
-  invoke requirements --base --addons && \
-  (pip uninstall uritemplate.py --yes || true) && \
-  pip install uritemplate.py==0.3.0
+COPY ./webpack* /code/
+COPY ./website/static /code/website/static/
+COPY ./website/addons/wiki/static/ /code/website/addons/wiki/static/
+RUN mkdir -p /code/website/static/built/ && \
+  invoke build_js_config_files && \
+  node ./node_modules/webpack/bin/webpack.js --config webpack.prod.config.js && \
+  rm -rf /code/node_modules && \
+  npm install list-of-licenses && \
+  rm -rf /root/.npm && \
+  npm cache clean
+# /NPM/webpack
 
-RUN  mkdir -p /code/website/static/built/ && \
-    invoke build_js_config_files && \
-  node ./node_modules/webpack/bin/webpack.js --config webpack.prod.config.js
-
-# RUN apt-get clean \
-#   && apt-get autoremove -y \
-#     build-essential \
-#   && rm -rf \
-RUN rm -rf \
-  /tmp \
-  /root/.npm \
-  /root/.cache \
-  /code/node_modules \
-  /code/website/static/vendor/bower_components
-
-RUN npm install list-of-licenses
+# Copy the rest of the code over
+COPY ./ /code/
 
 CMD ["gosu", "nobody", "invoke", "--list"]
