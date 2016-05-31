@@ -1,4 +1,4 @@
-FROM python:2.7
+FROM python:2.7-slim
 
 # Install dependancies
 RUN apt-get update \
@@ -109,14 +109,27 @@ COPY ./ /code/
 RUN mv /code/website/settings/local-dist.py /code/website/settings/local.py && \
   mv /code/api/base/settings/local-dist.py /code/api/base/settings/local.py
 
-RUN invoke requirements --addons && \
+RUN pip install invoke && \
+  invoke requirements --release && \
+  invoke requirements --base --addons && \
   (pip uninstall uritemplate.py --yes || true) && \
   pip install uritemplate.py==0.3.0
 
-RUN invoke build_js_config_files
+RUN  mkdir -p /code/website/static/built/ && \
+    invoke build_js_config_files && \
+  node ./node_modules/webpack/bin/webpack.js --config webpack.prod.config.js
 
-RUN node ./node_modules/webpack/bin/webpack.js --config webpack.prod.config.js
+# RUN apt-get clean \
+#   && apt-get autoremove -y \
+#     build-essential \
+#   && rm -rf \
+RUN rm -rf \
+  /tmp \
+  /root/.npm \
+  /root/.cache \
+  /code/node_modules \
+  /code/website/static/vendor/bower_components
 
-RUN rm -rf ./node_modules ./website/static/vendor/bower_components
+RUN npm install list-of-licenses
 
 CMD ["gosu", "nobody", "invoke", "--list"]
