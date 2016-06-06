@@ -11,12 +11,12 @@ RUN apt-get update \
         libxslt1-dev \
         zlib1g-dev \
         # matplotlib
-        # libfreetype6-dev \
-        # libxft-dev \
+        libfreetype6-dev \
+        libxft-dev \
         # # scipy
-        # gfortran \
-        # libopenblas-dev \
-        # liblapack-dev \
+        gfortran \
+        libopenblas-dev \
+        liblapack-dev \
         # cryptography
         build-essential \
         libssl-dev \
@@ -80,6 +80,8 @@ COPY ./website/addons/s3/requirements.txt /code/website/addons/s3/
 COPY ./website/addons/twofactor/requirements.txt /code/website/addons/twofactor/
 
 RUN pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/requirements.txt && \
+  pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/requirements/metrics.txt && \
+  pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/requirements/release.txt && \
   pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/dropbox/requirements.txt && \
   pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/github/requirements.txt && \
   pip install --no-cache-dir -c /code/requirements/constraints.txt -r /code/website/addons/mendeley/requirements.txt && \
@@ -125,5 +127,7 @@ RUN mkdir -p /code/website/static/built/ && \
 
 # Copy the rest of the code over
 COPY ./ /code/
+
+RUN rm /code/website/settings/local.py /code/api/base/settings/local.py
 
 CMD ["gosu", "nobody", "invoke", "--list"]
