@@ -128,6 +128,8 @@ RUN mkdir -p /code/website/static/built/ && \
 # Copy the rest of the code over
 COPY ./ /code/
 
-RUN rm /code/website/settings/local.py /code/api/base/settings/local.py
+RUN touch /code/website/templates/_log_templates.mako && \
+    chmod o+w /code/website/templates/_log_templates.mako && \
+    rm /code/website/settings/local.py /code/api/base/settings/local.py
 
 CMD ["gosu", "nobody", "invoke", "--list"]
