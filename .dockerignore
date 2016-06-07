@@ -7,4 +7,3 @@ node_modules
 *.pyc
 **/*.pyc
 website/static/built
-Dockerfile
