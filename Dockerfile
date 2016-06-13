@@ -1,5 +1,8 @@
 FROM python:2.7-slim
 
+# Libraries such as matplotlib require a HOME directory for cache and configuration
+RUN usermod -d /home www-data && chown www-data:www-data /home
+
 # Install dependancies
 RUN apt-get update \
     && apt-get install -y \
