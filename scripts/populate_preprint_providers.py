@@ -391,8 +391,7 @@ def main(env):
             'logo_name': 'agrixiv-logo.svg',
             'description': 'Preprints for Agriculture and Allied Sciences',
             'banner_name': 'agrixiv-banner.svg',
-            'external_url': '',
-            'example': '8whkp',
+            'example': '',
             'advisory_board': '''
                 <div class="col-xs-6">
                     <h3>Advisory Board</h3>
