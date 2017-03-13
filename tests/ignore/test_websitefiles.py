@@ -9,7 +9,7 @@ from osf.modm_compat import Q
 from website.files import utils
 from osf.models import files as models
 from website.files import exceptions
-from website.files.models import S3File
+from addons.s3.models import S3File
 from osf.models import Guid
 from website.views import find_bookmark_collection
 
