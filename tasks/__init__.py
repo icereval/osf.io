@@ -532,7 +532,7 @@ def test_module(ctx, module=None, numprocesses=None, params=None):
         numprocesses = cpu_count()
     # NOTE: Subprocess to compensate for lack of thread safety in the httpretty module.
     # https://github.com/gabrielfalcao/HTTPretty/issues/209#issue-54090252
-    args = ['-s']
+    args = ['-s', '-v', '-x']
     if numprocesses > 1:
         args += ['-n {}'.format(numprocesses), '--max-slave-restart=0']
     modules = [module] if isinstance(module, basestring) else module
