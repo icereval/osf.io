@@ -67,10 +67,7 @@ CSRF_COOKIE_NAME = 'api-csrf'
 CSRF_COOKIE_SECURE = osf_settings.SECURE_MODE
 CSRF_COOKIE_HTTPONLY = osf_settings.SECURE_MODE
 
-ALLOWED_HOSTS = [
-    '.osf.io'
-]
-
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split(',') if os.environ.get('ALLOWED_HOSTS') else []
 
 # Application definition
 

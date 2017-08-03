@@ -135,7 +135,7 @@ RUN (pip uninstall uritemplate.py --yes || true) \
     && pip install --no-cache-dir uritemplate.py==0.3.0
 
 # Fix: https://github.com/CenterForOpenScience/osf.io/pull/6783
-RUN python -m compileall /usr/local/lib/python2.7 || true
+RUN python -m compileall /usr/local/lib/python2.7 > /dev/null || true
 
 # OSF: Assets
 COPY ./.bowerrc /code/
@@ -206,6 +206,8 @@ RUN node ./node_modules/webpack/bin/webpack.js --config webpack.prod.config.js \
 WORKDIR /code
 # /Admin: Assets
 
+# Travis Test Requirements
+RUN npm install jshint
 
 # Copy the rest of the code over
 COPY ./ /code/
@@ -213,8 +215,8 @@ COPY ./ /code/
 ARG GIT_COMMIT=
 ENV GIT_COMMIT ${GIT_COMMIT}
 
-RUN export DJANGO_SETTINGS_MODULE=api.base.settings && python manage.py collectstatic --noinput --no-init-app \
-    && export DJANGO_SETTINGS_MODULE=admin.base.settings && python manage.py collectstatic --noinput --no-init-app
+RUN export DJANGO_SETTINGS_MODULE=api.base.settings && python manage.py collectstatic --noinput --no-init-app > /dev/null \
+    && export DJANGO_SETTINGS_MODULE=admin.base.settings && python manage.py collectstatic --noinput --no-init-app > /dev/null
 
 RUN touch /code/website/templates/_log_templates.mako \
     && chmod o+w /code/website/templates/_log_templates.mako \

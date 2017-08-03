@@ -93,3 +93,20 @@ sqlparse==0.2.2
 psycogreen==1.0
 django-bulk-update==1.1.10
 ciso8601==1.0.3
+
+# Testing
+pytest==3.0.3
+pytest-xdist==1.15.0
+# pulling from github because master has django_assert_num_queries context mgr
+git+https://github.com/pytest-dev/pytest-django.git@master
+nose
+factory-boy==2.7.0
+webtest-plus==0.3.3
+mock==1.0.1
+fake-factory==0.5.4
+schema==0.3.1
+HTTPretty==0.8.14
+
+# Syntax checking
+flake8==2.4.0
+flake8-quotes==0.3.0
